@@ -18,6 +18,13 @@ import ControllerInstance from '@/lib/controller-instance'
 import { useHttp } from '@/hooks/use-http'
 import { getSelectedWorkspaceFromStorage, setSelectedWorkspaceToStorage } from '@/store/workspace'
 
+// FIX 1: WarningIcon is now defined OUTSIDE the component
+const WarningIcon = () => (
+  <svg className="mt-0.5 mr-2.5 h-[18px] w-[18px] flex-shrink-0 text-[#999]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+    <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-1.72 6.97a.75.75 0 10-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 101.06 1.06L12 13.06l1.72 1.72a.75.75 0 101.06-1.06L13.06 12l1.72-1.72a.75.75 0 10-1.06-1.06L12 10.94l-1.72-1.72z" clipRule="evenodd" />
+  </svg>
+)
+
 export default function ConfirmDeleteWorkspace(): React.JSX.Element {
   const workspaceFromStorage = getSelectedWorkspaceFromStorage()
 
@@ -41,7 +48,7 @@ export default function ConfirmDeleteWorkspace(): React.JSX.Element {
 
   const handleClose = useCallback(() => {
     setIsDeleteWorkspaceOpen(false)
-    setConfirmWorkspaceName('') // Reset input on close
+    setConfirmWorkspaceName('')
   }, [setIsDeleteWorkspaceOpen])
 
   const handleDeleteWorkspace = async () => {
@@ -81,26 +88,21 @@ export default function ConfirmDeleteWorkspace(): React.JSX.Element {
     }
   }
 
-  // Helper for the warning list icons
-  const WarningIcon = () => (
-    <svg className="mt-0.5 mr-2.5 h-[18px] w-[18px] flex-shrink-0 text-[#999]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-      <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-1.72 6.97a.75.75 0 10-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 101.06 1.06L12 13.06l1.72 1.72a.75.75 0 101.06-1.06L13.06 12l1.72-1.72a.75.75 0 10-1.06-1.06L12 10.94l-1.72-1.72z" clipRule="evenodd" />
-    </svg>
-  )
-
   return (
     <AlertDialog
       open={isDeleteWorkspaceOpen}
       onOpenChange={handleClose}
     >
-      <AlertDialogContent className="max-w-[600px] gap-0 border border-[#333] bg-[#1A1A1A] p-0 text-white shadow-2xl sm:rounded-xl">
+      <AlertDialogContent className="max-w-[600px] gap-0 border border-[#333] bg-[#1A1A1A] p-0 text-white shadow-2xl sm:rounded-md">
         
         {/* HEADER */}
         <div className="flex items-center justify-between border-b border-[#333] px-6 py-5">
           <AlertDialogTitle className="text-xl font-semibold text-white">
             Delete {selectedWorkspace?.name}?
           </AlertDialogTitle>
+          
           <button 
+            type="button"
             onClick={handleClose} 
             className="flex items-center justify-center rounded p-1 text-[#999] transition-colors hover:text-white"
           >
@@ -153,14 +155,18 @@ export default function ConfirmDeleteWorkspace(): React.JSX.Element {
 
         {/* FOOTER */}
         <div className="flex justify-end gap-3 border-t border-[#333] bg-[#1A1A1A] px-6 py-5">
+          {/* FIX 2: Added type="button" */}
           <button
+            type="button"
             className="flex items-center justify-center rounded px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#444] bg-[#333]"
             onClick={handleClose}
             disabled={isLoading}
           >
             Cancel
           </button>
+        
           <button
+            type="button"
             className="flex items-center justify-center gap-2 rounded px-4 py-2 text-sm font-medium text-white transition-colors bg-[#E53935] hover:bg-[#D32F2F] disabled:cursor-not-allowed disabled:opacity-50"
             disabled={
               isLoading ||
@@ -170,7 +176,6 @@ export default function ConfirmDeleteWorkspace(): React.JSX.Element {
             onClick={handleDeleteWorkspace}
           >
              {isLoading ? (
-                // Simple spinner svg if loading
                 <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
